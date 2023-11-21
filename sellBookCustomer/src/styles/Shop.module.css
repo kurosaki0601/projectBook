@@ -1,0 +1,11 @@
+.container{
+    width: 80%;
+    margin: auto;
+}
+.category{
+    padding: 15px;
+    margin-top:30px;
+    background-color: #fff;
+    height: 120px;
+    
+}

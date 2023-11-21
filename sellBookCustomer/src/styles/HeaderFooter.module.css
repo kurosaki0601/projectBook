@@ -1,0 +1,19 @@
+.header{
+    display: flex;
+    justify-Content: space-between;
+    align-Items: center;
+    padding: 20px;
+}
+
+.login{display: inline-block;}
+.inputSearch{
+    width: 500px;
+}
+.iconHeader{
+    font-size: 24px;
+}
+.title{
+    font-size: 20px;
+    font-weight: bold;
+
+}
