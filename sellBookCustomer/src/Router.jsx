@@ -8,7 +8,7 @@ import ProtectedRoutes from "./utils/ProtectedRouter";
 import Details from "./components/Details";
 import Blog from "./components/Blog";
 import CustomerInfor from "./components/CustomerInfor";
-import Cart from "./components/Cart";
+
 import Register from "./Authentication/Register";
 import TabHome from "./components/TabHome";
 import DetailBlog from "./components/DetailBlog";
@@ -52,10 +52,7 @@ const Router = createBrowserRouter([
       path: "infor/:id",
       element: <ProtectedRoutes><CustomerInfor /></ProtectedRoutes>,
     },
-    {
-      path: "cart",
-      element: <ProtectedRoutes><Cart /></ProtectedRoutes>,
-    },
+    
     ],
   },
   

@@ -72,11 +72,13 @@ const Shop = () => {
   
   return (
     <div className={shopStyle.container}>
+      
       <Row>
+     
         <Col md={2} className={shopStyle.category}>
-        <Input placeholder="Search" onChange={e => setSearchTerm(e.target.value)}></Input>
+        <strong style={{fontSize:"24px"}}>Category</strong>
           {categories.map((category) => (
-            <Row key={category.id} >
+            <Row key={category.id} style={{backgroundColor:"white"}}>
               <Col>
                 <input
                   type="checkbox"
@@ -102,6 +104,7 @@ const Shop = () => {
         </Col>
 
         <Col md={10}>
+        <Input  placeholder="Search by Title" onChange={e => setSearchTerm(e.target.value)}></Input>
         <Row className={homeStyle.cardTotal}>
             {books.map((book) => (
                  <Col md={3} key={book.id} className={homeStyle.card}>
@@ -111,24 +114,21 @@ const Shop = () => {
                    cover={
                      <img
                        alt="example"
-                       src={`http://127.0.0.1:8090/api/files/book/${book.id}/${book.picture}?thumb=100x300`}
+                       src={book.picture}
                      />
                    }
                  >
                    <Link to={`/customers/detail/${book.id}`} style={{ textDecoration: 'none' }}>
                      <p className={homeStyle.bookName}> Title: {book.name}</p>
-                   </Link>
+                   
                    <p>Author: {book.author}</p>
                    <p> Price: {book.price} $</p>
                    <p>Quantity: {book.quantity}</p>
                    
                   
-                   <Input
-                     className={homeStyle.inputQuantity}
-                     type="number"
-                     value={0} 
-                   />
+                  
                    <Button>Buy</Button>
+                   </Link>
                  </Card>
                </Col>
                

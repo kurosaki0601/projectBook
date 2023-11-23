@@ -56,7 +56,7 @@ const Blog = () => {
              cover={
                <img
                  alt="example"
-                 src={`http://127.0.0.1:8090/api/files/blog/${blog.id}/${blog.picture}?thumb=100x300`}
+                 src={blog.picture}
                />
              }
            >

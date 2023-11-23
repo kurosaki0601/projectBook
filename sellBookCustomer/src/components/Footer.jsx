@@ -1,10 +1,11 @@
-import { Container } from "react-bootstrap";
+// import { Container } from "react-bootstrap";
 import footerStyle from "../styles/HeaderFooter.module.css"
+import { Container } from 'react-bootstrap';
 
 const Footer = () => {
     return (
-        <Container className={footerStyle.header}>
-          
+        <div style={{background:"gray", marginTop:"20px", color:"white"}} >
+          <Container className={footerStyle.header}>
                 <div>
                     <p className={footerStyle.title}>Customer Support</p>
                     <p>Email: bookstore@gmail.com</p>
@@ -22,8 +23,8 @@ const Footer = () => {
                     <p><i className="fa-brands fa-instagram"></i> Instagram</p>
                     <p><i className="fa-brands fa-line"></i> Line</p>
                 </div>
-        
-        </Container>
+                </Container>
+        </div>
     );
 };
 

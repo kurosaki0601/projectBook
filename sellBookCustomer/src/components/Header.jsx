@@ -14,7 +14,7 @@ const Header = () => {
     useEffect(() =>{
        const result = CustomerService.getCustomerInfo(); 
        result.then(result => {
-        setUserName(result.data.username)
+        setUserName(result.data.name)
         setUser(result.data)
        }) 
     },[])
@@ -31,9 +31,7 @@ const Header = () => {
           <Link to={"/home"} style={{ textDecoration: 'none' }}><div className={headerStyle.iconHeader}>Book Store</div></Link>
           
           <div style={{display:"flex", alignItems: "center"}}>
-          <Button>
-              <i className="fa-solid fa-cart-shopping"></i>
-            </Button>
+      
           <Link to={`/customers/Infor/${user.id}`} style={{ textDecoration: 'none' }}> <div style={{marginLeft:"10px"}}>{userName}</div></Link> 
          <i onClick={LogOut} className="fa-solid fa-right-from-bracket"></i>  
             

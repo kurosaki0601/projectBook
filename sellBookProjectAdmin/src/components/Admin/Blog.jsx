@@ -110,6 +110,17 @@ const Blog = () => {
       dataIndex: "date",
       key: "date",
     },
+    {
+      title: "Picture",
+      dataIndex: "picture",
+      key: "picture",
+      render:(record) => (
+        <img style={{
+          width: "300px",
+          height: "180px",
+        }} src={record} alt="" />
+      )
+    },
 
     {
       key: "actions",

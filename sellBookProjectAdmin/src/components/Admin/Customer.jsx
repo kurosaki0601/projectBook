@@ -92,6 +92,17 @@ const Customer = () => {
   }, []);
   const columns = [
     {
+      title: "Avatar",
+      dataIndex: "avatar",
+      key: "avatar",
+      render:(record) => (
+        <img style={{
+          width: "300px",
+          height: "180px",
+        }} src={record} alt="" />
+      )
+    },
+    {
       title: "Email",
       dataIndex: "email",
       key: "email",

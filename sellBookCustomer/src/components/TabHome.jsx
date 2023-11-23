@@ -16,6 +16,7 @@ const TabHome = () => {
     setActiveTab(key);
     window.scrollTo({top: 0, behavior: 'smooth'});
   };
+ 
   const items = [
     {
       key: "1",

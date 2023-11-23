@@ -1,11 +1,12 @@
 .container{
-    width: 80%;
+    width: 90%;
     margin: auto;
 }
 .category{
-    padding: 15px;
+   
     margin-top:30px;
-    background-color: #fff;
-    height: 120px;
+   
+  background-color: white;
+  height: 200px;
     
 }
