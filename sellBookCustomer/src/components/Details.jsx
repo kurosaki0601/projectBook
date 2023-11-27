@@ -60,10 +60,12 @@ const Details = () => {
   const submitComment = async (e) => {
     e.preventDefault();
     try {
+      const currentDate = new Date();
       const commentData = {
         content: newComment,
         bookId: id,
         userId: userInfo?.id,
+        date: currentDate.toISOString(),
       };
       await commentService.create(commentData);
       fetchData();
@@ -72,6 +74,7 @@ const Details = () => {
       console.log(err);
     }
   };
+
   const fetchData = async () => {
     try {
       const result = await commentService.list();
@@ -85,6 +88,19 @@ const Details = () => {
       console.log(err);
     }
   };
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await commentService.delete(commentId);
+
+      const updatedComments = comments.filter(
+        (comment) => comment.id !== commentId
+      );
+      setComments(updatedComments);
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, [id]);
@@ -156,26 +172,53 @@ const Details = () => {
           </div>
         </div>
       </div>
-      <div>
+      <div className={detailStyle.comment}>
         {comments.map((comment) => (
           <div key={comment.id}>
-            <p>{comment.content}</p>
-            <p>{comment.expand.userId.email}</p>
-            <p>{comment.date}</p>
+            <div className={detailStyle.commentItem}>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <p style={{ fontWeight: 600, color: "#fff" }}>
+                  {comment.expand.userId.email}
+                </p>
+                {userInfo?.email === comment.expand.userId.email && (
+                  <i
+                    style={{ color: "red" }}
+                    className="fa-solid fa-trash"
+                    onClick={() => handleDeleteComment(comment.id)}
+                  ></i>
+                )}
+              </div>
+              <p style={{ color: "#fff" }}>{comment.content}</p>
+            </div>
+            <p>
+              {new Date(comment.date).toLocaleString("en-US", {
+                dateStyle: "long",
+              })}
+            </p>
           </div>
         ))}
       </div>
-      <div>
+      <div style={{}}>
         <form onSubmit={submitComment}>
           <textarea
             name="comment"
             id="comment"
-            cols="30"
-            rows="10"
+            cols="80"
+            rows="3"
             value={newComment}
             onChange={handleCommentChange}
+            style={{
+              margin: "auto",
+              textAlign: "center",
+              display: "block",
+            }}
           ></textarea>
-          <button type="submit">Comment</button>
+          <button
+            style={{ marginLeft: "29.9%", marginTop: "10px", padding: "8px" }}
+            type="submit"
+          >
+            Comment
+          </button>
         </form>
       </div>
       <Footer></Footer>
