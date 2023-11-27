@@ -43,8 +43,8 @@ const Details = () => {
       };
       try {
         await orderService.create(order);
-       
-        location.reload();
+
+        // location.reload();
       } catch (err) {
         console.log(err);
       }
@@ -88,25 +88,21 @@ const Details = () => {
                 justifyContent: "space-between",
               }}
             >
-              <form
-                action=""
-                onSubmit={formik.handleSubmit}
-                
-              >
-                <label htmlFor="quantityOrder"><strong>Quantity</strong></label>
-                {" "}
+              <form action="" onSubmit={formik.handleSubmit}>
+                <label htmlFor="quantityOrder">
+                  <strong>Quantity</strong>
+                </label>{" "}
                 <Input
                   style={{ width: "30%" }}
                   type="number"
                   name="quantityOrder"
-                  
                   value={formik.values.quantityOrder}
                   onChange={(e) => {
                     const quantityOrder = e.target.value;
                     formik.setFieldValue("quantityOrder", quantityOrder);
                     formik.setFieldValue(
                       "totalPrice",
-                      quantityOrder * 2
+                      quantityOrder * (book?.price)
                     );
                   }}
                 />
@@ -116,7 +112,7 @@ const Details = () => {
                       {formik.errors.quantityOrder}
                     </div>
                   )}
-                <Button style={{ width: "50%" }}>Buy</Button>
+                <button style={{ width: "50%" }}>Buy</button>
               </form>
             </div>
           </div>
