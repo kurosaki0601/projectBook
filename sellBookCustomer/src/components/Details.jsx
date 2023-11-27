@@ -10,15 +10,17 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import orderService from "../Service/order.service";
 import useUserInfo from "../hooks/useUserInfo";
+import commentService from "../Service/comment.service";
 
 const Details = () => {
   const { id } = useParams();
   const [book, setBook] = useState();
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
   const userInfo = useUserInfo();
   const navigate = useNavigate();
   useEffect(() => {
     const result = bookService.read(id);
-    console.log(result.data);
     result.then((book) => setBook(book.data));
   }, [id]);
   const goBack = () => {
@@ -50,6 +52,42 @@ const Details = () => {
       }
     },
   });
+
+  const handleCommentChange = (e) => {
+    setNewComment(e.target.value);
+  };
+
+  const submitComment = async (e) => {
+    e.preventDefault();
+    try {
+      const commentData = {
+        content: newComment,
+        bookId: id,
+        userId: userInfo?.id,
+      };
+      await commentService.create(commentData);
+      fetchData();
+      setNewComment("");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const fetchData = async () => {
+    try {
+      const result = await commentService.list();
+      if (id) {
+        const filteredItems = result.data.items.filter(
+          (item) => item.expand.bookId.id === id
+        );
+        setComments(filteredItems); // Update the comments state
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, [id]);
 
   return (
     <div style={{ backgroundColor: "lightgray" }}>
@@ -102,7 +140,7 @@ const Details = () => {
                     formik.setFieldValue("quantityOrder", quantityOrder);
                     formik.setFieldValue(
                       "totalPrice",
-                      quantityOrder * (book?.price)
+                      quantityOrder * book?.price
                     );
                   }}
                 />
@@ -117,6 +155,28 @@ const Details = () => {
             </div>
           </div>
         </div>
+      </div>
+      <div>
+        {comments.map((comment) => (
+          <div key={comment.id}>
+            <p>{comment.content}</p>
+            <p>{comment.expand.userId.email}</p>
+            <p>{comment.date}</p>
+          </div>
+        ))}
+      </div>
+      <div>
+        <form onSubmit={submitComment}>
+          <textarea
+            name="comment"
+            id="comment"
+            cols="30"
+            rows="10"
+            value={newComment}
+            onChange={handleCommentChange}
+          ></textarea>
+          <button type="submit">Comment</button>
+        </form>
       </div>
       <Footer></Footer>
     </div>
