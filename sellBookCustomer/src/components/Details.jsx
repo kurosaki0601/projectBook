@@ -198,29 +198,31 @@ const Details = () => {
           </div>
         ))}
       </div>
-      <div style={{}}>
-        <form onSubmit={submitComment}>
-          <textarea
-            name="comment"
-            id="comment"
-            cols="80"
-            rows="3"
-            value={newComment}
-            onChange={handleCommentChange}
-            style={{
-              margin: "auto",
-              textAlign: "center",
-              display: "block",
-            }}
-          ></textarea>
-          <button
-            style={{ marginLeft: "29.9%", marginTop: "10px", padding: "8px" }}
-            type="submit"
-          >
-            Comment
-          </button>
-        </form>
-      </div>
+      {userInfo ? (
+        <div style={{}}>
+          <form onSubmit={submitComment}>
+            <textarea
+              name="comment"
+              id="comment"
+              cols="80"
+              rows="3"
+              value={newComment}
+              onChange={handleCommentChange}
+              style={{
+                margin: "auto",
+                textAlign: "center",
+                display: "block",
+              }}
+            ></textarea>
+            <button
+              style={{ marginLeft: "29.9%", marginTop: "10px", padding: "8px" }}
+              type="submit"
+            >
+              Comment
+            </button>
+          </form>
+        </div>
+      ) : null}
       <Footer></Footer>
     </div>
   );
