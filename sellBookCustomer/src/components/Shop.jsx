@@ -4,9 +4,9 @@ import categoryService from "../Service/category.service";
 import shopStyle from "../styles/Shop.module.css";
 import { Row } from "react-bootstrap";
 import { Col } from "react-bootstrap";
-import { Input, Button, Pagination } from 'antd';
-import { Link } from 'react-router-dom';
-import { Card } from 'antd';
+import { Input, Button, Pagination } from "antd";
+import { Link } from "react-router-dom";
+import { Card } from "antd";
 import homeStyle from "../styles/Home.module.css";
 
 const Shop = () => {
@@ -24,7 +24,7 @@ const Shop = () => {
       try {
         let result;
         if (searchTerm) {
-          result = await bookService.searchName(searchTerm); 
+          result = await bookService.searchName(searchTerm);
         } else {
           result = await bookService.list({ page: currentPage, perPage: 8 });
         }
@@ -40,7 +40,6 @@ const Shop = () => {
     async function fetchData() {
       try {
         const result = await categoryService.search({ page: 1, perPage: 8 });
-        
 
         setCategory(result.data.items);
       } catch (err) {
@@ -49,7 +48,7 @@ const Shop = () => {
     }
     fetchData();
   }, []);
-  
+
   const handleChange = async (id, isChecked) => {
     if (isChecked) {
       setSelectedCategory(id);
@@ -69,16 +68,14 @@ const Shop = () => {
       }
     }
   };
-  
+
   return (
     <div className={shopStyle.container}>
-      
       <Row>
-     
         <Col md={2} className={shopStyle.category}>
-        <strong style={{fontSize:"24px"}}>Category</strong>
+          <strong style={{ fontSize: "24px" }}>Category</strong>
           {categories.map((category) => (
-            <Row key={category.id} style={{backgroundColor:"white"}}>
+            <Row key={category.id} style={{ backgroundColor: "white" }}>
               <Col>
                 <input
                   type="checkbox"
@@ -92,53 +89,63 @@ const Shop = () => {
                         : "inline",
                   }}
                 />
-                <p style={{
+                <p
+                  style={{
                     display:
                       selectedCategory && selectedCategory !== category.id
                         ? "none"
                         : "inline",
-                  }}>{category.name}</p>
+                  }}
+                >
+                  {category.name}
+                </p>
               </Col>
             </Row>
           ))}
         </Col>
 
         <Col md={10}>
-        <Input  placeholder="Search by Title" onChange={e => setSearchTerm(e.target.value)}></Input>
-        <Row className={homeStyle.cardTotal}>
+          <Input
+            placeholder="Search by Title"
+            onChange={(e) => setSearchTerm(e.target.value)}
+          ></Input>
+          <Row className={homeStyle.cardTotal}>
             {books.map((book) => (
-                 <Col md={3} key={book.id} className={homeStyle.card}>
-                 <Card
-                   hoverable
-                   style={{ width: "100%" }}
-                   cover={
-                     <img
-                       alt="example"
-                       src={book.picture}
-                     />
-                   }
-                 >
-                   <Link to={`/customers/detail/${book.id}`} style={{ textDecoration: 'none' }}>
-                     <p className={homeStyle.bookName}> Title: {book.name}</p>
-                   
-                   <p>Author: {book.author}</p>
-                   <p> Price: {book.price} $</p>
-                   <p>Quantity: {book.quantity}</p>
-                   
-                  
-                  
-                   <Button>Buy</Button>
-                   </Link>
-                 </Card>
-               </Col>
-               
+              <Col md={3} key={book.id} className={homeStyle.card}>
+                <Card
+                  style={{ height: "100%" }}
+                  hoverable
+                  cover={
+                    <img
+                      alt="example"
+                      src={book.picture}
+                      style={{ height: "320px" }}
+                    />
+                  }
+                >
+                  <Link
+                    to={`/customers/detail/${book.id}`}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <p className={homeStyle.bookName}> Title: {book.name}</p>
+
+                    <p>Author: {book.author}</p>
+                    <p> Price: {book.price} $</p>
+                    <p>Quantity: {book.quantity}</p>
+
+                    <Button>Buy</Button>
+                  </Link>
+                </Card>
+              </Col>
             ))}
-            <Pagination current={currentPage} total={totalItems*10} onChange={handlePageChange} />
-            </Row>
+            <Pagination
+              current={currentPage}
+              total={totalItems * 10}
+              onChange={handlePageChange}
+            />
+          </Row>
         </Col>
-        
       </Row>
-      
     </div>
   );
 };

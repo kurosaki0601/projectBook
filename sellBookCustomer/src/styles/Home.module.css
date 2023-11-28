@@ -1,55 +1,59 @@
+.bookName {
+  font-size: 15px;
+  font-weight: bold;
+}
+.inputQuantity {
+  width: 50%;
+  margin-right: 20px;
+}
+.card {
+  margin-top: 20px;
+}
+.cardTotal {
+  margin-top: 10px;
+}
 
-.bookName{
-    font-size: 15px;
-    font-weight: bold;
+.bookStore {
+  text-align: center;
+  background-color: aquamarine;
+  padding: 20px;
+  margin-top: 30px;
 }
-.inputQuantity{
-    width: 50%;
-    margin-right: 20px;
+.container {
+  background-color: #e4e6eb;
 }
-.card{
-    margin-top: 20px;
-}
-.cardTotal{
-    margin-top: 10px;
-}
-
-.bookStore{
-    text-align: center;
-    background-color: aquamarine;
-    padding: 20px;
-    margin-top: 30px;
-}
-.container{
-    background-color: #E4E6EB;
-}
-.header{
-    background-color: white;
+.header {
+  background-color: white;
 }
 
 .more {
-    cursor: pointer;
-    position: relative;
-    text-align: center;
-    padding: 10px;
-    margin-top: 20px;
-  }
-  
-  .more:after {
-    content: '';
-    position: absolute;
+  cursor: pointer;
+  position: relative;
+  text-align: center;
+  padding: 10px;
+  margin-top: 20px;
+}
+
+.more:after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+  animation: arrow 1s infinite;
+}
+
+@keyframes arrow {
+  0% {
     top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: black transparent transparent transparent;
-    animation: arrow 1s infinite;
   }
-  
-  @keyframes arrow {
-    0% { top: 100%; }
-    50% { top: 110%; }
-    100% { top: 100%; }
+  50% {
+    top: 110%;
   }
-  
+  100% {
+    top: 100%;
+  }
+}

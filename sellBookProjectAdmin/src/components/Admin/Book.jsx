@@ -12,7 +12,7 @@ const Book = () => {
   const [book, setBook] = useState([]);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [categorys,setCategorys] = useState([])
+  const [categorys, setCategorys] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingBook, setEditingBook] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -25,24 +25,26 @@ const Book = () => {
         result.data.items.forEach((item) => {
           item.categoryName = item.expand.category.name;
         });
-        
       } catch (err) {
         console.log(err);
       }
     }
     fetchData();
   }, []);
-  useEffect(()=>{
-    async function fetchDataCategory(){
-      try{
-        const resultCategory = await categoryService.search({page: 1, perPage: 30});
+  useEffect(() => {
+    async function fetchDataCategory() {
+      try {
+        const resultCategory = await categoryService.search({
+          page: 1,
+          perPage: 30,
+        });
         setCategorys(resultCategory.data.items);
-      }catch(err){
+      } catch (err) {
         console.log(err);
       }
     }
-    fetchDataCategory()
-  },[])
+    fetchDataCategory();
+  }, []);
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -51,6 +53,7 @@ const Book = () => {
       quantity: "",
       price: "",
       category: "",
+      picture: "",
     },
     validationSchema: yup.object({
       name: yup.string().required("Please enter name of category!"),
@@ -58,7 +61,8 @@ const Book = () => {
       abstract: yup.string().required("required"),
       quantity: yup.string().required("Required"),
       price: yup.string().required("Required"),
-      category: yup.string().required("Required")
+      category: yup.string().required("Required"),
+      picture: yup.string().required("Required"),
     }),
     onSubmit: async (values) => {
       try {
@@ -76,7 +80,7 @@ const Book = () => {
     },
   });
   const filteredBook = book.filter((search) =>
-  search.name.toLowerCase().includes(searchTerm.toLowerCase())
+    search.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const showModal = () => {
     setOpen(true);
@@ -138,12 +142,16 @@ const Book = () => {
       title: "Picture",
       dataIndex: "picture",
       key: "picture",
-      render:(record) => (
-        <img style={{
-          width: "300px",
-          height: "180px",
-        }} src={record} alt="" />
-      )
+      render: (record) => (
+        <img
+          style={{
+            width: "300px",
+            height: "180px",
+          }}
+          src={record}
+          alt=""
+        />
+      ),
     },
 
     {
@@ -153,16 +161,16 @@ const Book = () => {
         return (
           <>
             <EditOutlined
-            onClick={() => {
-              onEditBook(record);
-            }}
+              onClick={() => {
+                onEditBook(record);
+              }}
             />
 
             <DeleteOutlined
-            onClick={() => {
-              onDelete(record.id);
-            }}
-            style={{ color: "red", marginLeft: 12 }}
+              onClick={() => {
+                onDelete(record.id);
+              }}
+              style={{ color: "red", marginLeft: 12 }}
             />
           </>
         );
@@ -273,6 +281,21 @@ const Book = () => {
                   <p className={"form-error"}>{formik.errors.price}</p>
                 )}
               </div>
+              <div>
+                <div>
+                  <label>Add Picture</label>
+                </div>
+                <Input
+                  type="text"
+                  id="picture"
+                  name="picture"
+                  value={formik.values.picture}
+                  onChange={formik.handleChange}
+                />
+                {formik.errors.picture && formik.touched.picture && (
+                  <p className={"form-error"}>{formik.errors.picture}</p>
+                )}
+              </div>
               <div style={{ marginTop: "10px" }}>
                 <div>
                   <label>Category</label>
@@ -302,104 +325,117 @@ const Book = () => {
                   <p className={"form-error"}>{formik.errors.category}</p>
                 )}
               </div>
-            
             </form>
           </Modal>
           <Table dataSource={filteredBook} columns={columns} />
           <Modal
-              title="Edit book"
-              open={isEditing}
-              okText="Save"
-              onCancel={() => {
-                resetEditing();
+            title="Edit book"
+            open={isEditing}
+            okText="Save"
+            onCancel={() => {
+              resetEditing();
+            }}
+            onOk={() => {
+              bookService
+                .update(editingBook.id, {
+                  name: editingBook.name,
+                  abstract: editingBook.abstract,
+                  author: editingBook.author,
+                  quantity: editingBook.quantity,
+                  price: editingBook.price,
+                  category: editingBook.category,
+                  picture: editingBook.picture,
+                })
+                .then(() => {
+                  (pre) => {
+                    return pre.map((Book) => {
+                      if (Book.id === editingBook.id) {
+                        return editingBook;
+                      } else {
+                        return Book;
+                      }
+                    });
+                  };
+                  window.location.reload();
+                  resetEditing();
+                });
+            }}
+          >
+            <label> Name</label>
+            <Input
+              value={editingBook?.name}
+              onChange={(e) => {
+                setEditingBook((pre) => {
+                  return { ...pre, name: e.target.value };
+                });
               }}
-              onOk={() => {
-                bookService
-                  .update(editingBook.id, {
-                    name: editingBook.name,
-                    abstract: editingBook.abstract,
-                    author: editingBook.author,
-                    quantity: editingBook.quantity,
-                    price: editingBook.price  ,
-                    category: editingBook.category,
-                  })
-                  .then(() => {
-                    (pre) => {
-                      return pre.map((Book) => {
-                        if (Book.id === editingBook.id) {
-                          return editingBook;
-                        } else {
-                          return Book;
-                        }
-                      });
-                    };
-                    window.location.reload();
-                    resetEditing();
-                  });
-              }}
-            >
-              <label> Name</label>
-              <Input
-                value={editingBook?.name}
-                onChange={(e) => {
-                  setEditingBook((pre) => {
-                    return { ...pre, name: e.target.value };
-                  });
-                }}
-              />
+            />
+            <div>
+              <label>Abstract</label>
               <div>
-                <label>Abstract</label>
-                <div>
-                  <Input
-                    value={editingBook?.abstract}
-                    onChange={(e) => {
-                      setEditingBook((pre) => {
-                        return { ...pre, abstract: e.target.value };
-                      });
-                    }}
-                  />
-                </div>
+                <Input
+                  value={editingBook?.abstract}
+                  onChange={(e) => {
+                    setEditingBook((pre) => {
+                      return { ...pre, abstract: e.target.value };
+                    });
+                  }}
+                />
               </div>
+            </div>
+            <div>
+              <label>Author</label>
               <div>
-                <label>Author</label>
-                <div>
-                  <Input  
-                    value={editingBook?.author}
-                    onChange={(e) => {
-                      setEditingBook((pre) => {
-                        return { ...pre, author: e.target.value };
-                      });
-                    }}
-                  />
-                </div>
+                <Input
+                  value={editingBook?.author}
+                  onChange={(e) => {
+                    setEditingBook((pre) => {
+                      return { ...pre, author: e.target.value };
+                    });
+                  }}
+                />
               </div>
+            </div>
+            <div>
+              <label>Quantity</label>
               <div>
-                <label>Quantity</label>
-                <div>
-                  <Input  
-                    value={editingBook?.quantity}
-                    onChange={(e) => {
-                      setEditingBook((pre) => {
-                        return { ...pre, quantity : e.target.value };
-                      });
-                    }}
-                  />
-                </div>
+                <Input
+                  value={editingBook?.quantity}
+                  onChange={(e) => {
+                    setEditingBook((pre) => {
+                      return { ...pre, quantity: e.target.value };
+                    });
+                  }}
+                />
               </div>
+            </div>
+            <div>
+              <label>Price</label>
               <div>
-                <label>Price</label>
-                <div>
-                  <Input  
-                    value={editingBook?.price}
-                    onChange={(e) => {
-                      setEditingBook((pre) => {
-                        return { ...pre, price: e.target.value };
-                      });
-                    }}
-                  />
-                </div>
+                <Input
+                  value={editingBook?.price}
+                  onChange={(e) => {
+                    setEditingBook((pre) => {
+                      return { ...pre, price: e.target.value };
+                    });
+                  }}
+                />
               </div>
+            </div>
+            <div>
+              <label>Picture</label>
               <div>
+                <Input
+                  value={editingBook?.picture}
+                  onChange={(e) => {
+                    setEditingBook((pre) => {
+                      return { ...pre, picture: e.target.value };
+                    });
+                  }}
+                />
+              </div>
+            </div>
+            <div>
               <label>Category</label>
               <div>
                 <select
@@ -423,7 +459,7 @@ const Book = () => {
                 </select>
               </div>
             </div>
-            </Modal>
+          </Modal>
         </div>
       </section>
     </div>

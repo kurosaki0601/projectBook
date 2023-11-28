@@ -4,6 +4,8 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import Layout from "../../layout/layout";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 import { Input, Table } from "antd";
 import { Button, Modal } from "antd";
@@ -15,7 +17,6 @@ const Blog = () => {
   const [editingBlog, seteditingBlog] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-
 
   useEffect(() => {
     async function fetchData() {
@@ -36,13 +37,15 @@ const Blog = () => {
       date: "",
       abstract: "",
       content: "",
+      picture: "",
     },
-    validationSchema: yup.object({
+    validationSchema: yup.object().shape({
       title: yup.string().required("Please enter name of blog!"),
       author: yup.string().required("Required"),
       abstract: yup.string().required("Required"),
       date: yup.date().required("Required"),
       content: yup.string().required("Required"),
+      picture: yup.string().required("Required"),
     }),
     onSubmit: async (values) => {
       try {
@@ -71,7 +74,7 @@ const Blog = () => {
     seteditingBlog(null);
   };
   const filteredBlog = blog.filter((search) =>
-  search.title.toLowerCase().includes(searchTerm.toLowerCase())
+    search.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const onDelete = async (id) => {
     Modal.confirm({
@@ -87,7 +90,6 @@ const Blog = () => {
   const handleCancel = () => {
     setOpen(false);
   };
-
 
   const columns = [
     {
@@ -114,12 +116,16 @@ const Blog = () => {
       title: "Picture",
       dataIndex: "picture",
       key: "picture",
-      render:(record) => (
-        <img style={{
-          width: "300px",
-          height: "180px",
-        }} src={record} alt="" />
-      )
+      render: (record) => (
+        <img
+          style={{
+            width: "300px",
+            height: "180px",
+          }}
+          src={record}
+          alt=""
+        />
+      ),
     },
 
     {
@@ -129,16 +135,16 @@ const Blog = () => {
         return (
           <>
             <EditOutlined
-            onClick={() => {
-              onEditBlog(record);
-            }}
+              onClick={() => {
+                onEditBlog(record);
+              }}
             />
 
             <DeleteOutlined
-            onClick={() => {
-              onDelete(record.id);
-            }}
-            style={{ color: "red", marginLeft: 12 }}
+              onClick={() => {
+                onDelete(record.id);
+              }}
+              style={{ color: "red", marginLeft: 12 }}
             />
           </>
         );
@@ -236,14 +242,30 @@ const Blog = () => {
               </div>
               <div>
                 <div>
-                  <label>Add Content</label>
+                  <label>Add Image URL</label>
                 </div>
                 <Input
                   type="text"
+                  id="picture"
+                  name="picture"
+                  value={formik.values.picture}
+                  onChange={formik.handleChange}
+                />
+                {formik.errors.picture && formik.touched.picture && (
+                  <p className={"form-error"}>{formik.errors.picture}</p>
+                )}
+              </div>
+
+              <div>
+                <div>
+                  <label>Add Content</label>
+                </div>
+                <ReactQuill
+                  style={{ height: "250px", paddingBottom: "50px" }}
                   name="content"
                   id="content"
                   value={formik.values.content}
-                  onChange={formik.handleChange}
+                  onChange={(value) => formik.setFieldValue("content", value)}
                 />
                 {formik.errors.content && formik.touched.content && (
                   <p className={"form-error"}>{formik.errors.content}</p>
@@ -253,76 +275,98 @@ const Blog = () => {
           </Modal>
           <Table dataSource={filteredBlog} columns={columns} />
           <Modal
-              title="Edit Blog"
-              open={isEditing}
-              okText="Save"
-              onCancel={() => {
-                resetEditing();
+            title="Edit Blog"
+            open={isEditing}
+            okText="Save"
+            onCancel={() => {
+              resetEditing();
+            }}
+            onOk={() => {
+              blogService
+                .update(editingBlog.id, {
+                  title: editingBlog.title,
+                  abstract: editingBlog.abstract,
+                  author: editingBlog.author,
+                  picture: editingBlog.picture,
+                  content: editingBlog.content,
+                })
+                .then(() => {
+                  (pre) => {
+                    return pre.map((Blog) => {
+                      if (Blog.id === editingBlog.id) {
+                        return editingBlog;
+                      } else {
+                        return Blog;
+                      }
+                    });
+                  };
+                  window.location.reload();
+                  resetEditing();
+                });
+            }}
+          >
+            <label> Title</label>
+            <Input
+              value={editingBlog?.title}
+              onChange={(e) => {
+                seteditingBlog((pre) => {
+                  return { ...pre, title: e.target.value };
+                });
               }}
-              onOk={() => {
-                blogService
-                  .update(editingBlog.id, {
-                    title: editingBlog.title,
-                    abstract: editingBlog.abstract,
-                    author: editingBlog.author,
-                    
-                    
-                  })
-                  .then(() => {
-                    (pre) => {
-                      return pre.map((Blog) => {
-                        if (Blog.id === editingBlog.id) {
-                          return editingBlog;
-                        } else {
-                          return Blog;
-                        }
-                      });
-                    };
-                    window.location.reload();
-                    resetEditing();
-                  });
-              }}
-            >
-              <label> Title</label>
-              <Input
-                value={editingBlog?.title}
-                onChange={(e) => {
-                  seteditingBlog((pre) => {
-                    return { ...pre, title: e.target.value };
-                  });
-                }}
-              />
+            />
+            <div>
+              <label>Abstract</label>
               <div>
-                <label>Abstract</label>
-                <div>
-                  <Input
-                    value={editingBlog?.abstract}
-                    onChange={(e) => {
-                      seteditingBlog((pre) => {
-                        return { ...pre, abstract: e.target.value };
-                      });
-                    }}
-                  />
-                </div>
+                <Input
+                  value={editingBlog?.abstract}
+                  onChange={(e) => {
+                    seteditingBlog((pre) => {
+                      return { ...pre, abstract: e.target.value };
+                    });
+                  }}
+                />
               </div>
+            </div>
+            <div>
+              <label>Author</label>
               <div>
-                <label>Author</label>
-                <div>
-                  <Input  
-                    value={editingBlog?.author}
-                    onChange={(e) => {
-                      seteditingBlog((pre) => {
-                        return { ...pre, author: e.target.value };
-                      });
-                    }}
-                  />
-                </div>
+                <Input
+                  value={editingBlog?.author}
+                  onChange={(e) => {
+                    seteditingBlog((pre) => {
+                      return { ...pre, author: e.target.value };
+                    });
+                  }}
+                />
               </div>
-              
-            
-              
-           
-            </Modal>
+            </div>
+            <div>
+              <label>Picture</label>
+              <div>
+                <Input
+                  value={editingBlog?.picture}
+                  onChange={(e) => {
+                    seteditingBlog((pre) => {
+                      return { ...pre, picture: e.target.value };
+                    });
+                  }}
+                />
+              </div>
+            </div>
+            <div>
+              <label>Content</label>
+              <div>
+                <ReactQuill
+                  value={editingBlog?.content}
+                  onChange={(value) => {
+                    seteditingBlog((prev) => {
+                      return { ...prev, content: value };
+                    });
+                  }}
+                />
+              </div>
+            </div>
+          </Modal>
         </div>
       </section>
     </div>

@@ -56,15 +56,13 @@ const Customer = () => {
     }),
     onSubmit: async (values) => {
       try {
-        
-        if(emailerror != null) {
+        if (emailerror != null) {
           setConfirmLoading(true);
           setTimeout(() => {
             setOpen(false);
             setConfirmLoading(false);
-          }, 2000);}
-    
-        
+          }, 2000);
+        }
 
         await userService.create(values);
         window.location.reload();
@@ -92,17 +90,6 @@ const Customer = () => {
   }, []);
   const columns = [
     {
-      title: "Avatar",
-      dataIndex: "avatar",
-      key: "avatar",
-      render:(record) => (
-        <img style={{
-          width: "300px",
-          height: "180px",
-        }} src={record} alt="" />
-      )
-    },
-    {
       title: "Email",
       dataIndex: "email",
       key: "email",
@@ -123,22 +110,37 @@ const Customer = () => {
       key: "address",
     },
     {
+      title: "Avatar",
+      dataIndex: "avatar",
+      key: "avatar",
+      render: (record) => (
+        <img
+          style={{
+            width: "300px",
+            height: "180px",
+          }}
+          src={record}
+          alt=""
+        />
+      ),
+    },
+    {
       key: "actions",
       title: "Actions",
       render: (record) => {
         return (
           <>
             <EditOutlined
-            onClick={() => {
-              onEditUser(record);
-            }}
+              onClick={() => {
+                onEditUser(record);
+              }}
             />
 
             <DeleteOutlined
-            onClick={() => {
-              onDelete(record.id);
-            }}
-            style={{ color: "red", marginLeft: 12 }}
+              onClick={() => {
+                onDelete(record.id);
+              }}
+              style={{ color: "red", marginLeft: 12 }}
             />
           </>
         );
@@ -146,19 +148,17 @@ const Customer = () => {
     },
   ];
   const filteredCustomer = customer.filter((search) =>
-  search.email.toLowerCase().includes(searchTerm.toLowerCase())
+    search.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  
   const onDelete = async (id) => {
     Modal.confirm({
       title: "Are you sure detele this?",
       okText: "Yes",
       okType: "danger",
-      onOk:async () => {
-      await userService.delete(id);
-      window.location.reload();
-
+      onOk: async () => {
+        await userService.delete(id);
+        window.location.reload();
       },
     });
   };
@@ -256,71 +256,70 @@ const Customer = () => {
           <Table dataSource={filteredCustomer} columns={columns} />
         </div>
         <Modal
-              title="Edit user"
-              open={isEditing}
-              okText="Save"
-              onCancel={() => {
-                resetEditing();
-              }}
-              onOk={() => {
-                userService
-                  .update(editingUser.id, {
-                    name: editingUser.name,
-                    phone: editingUser.phone,
-                    address: editingUser.address,
-                  })
-                  .then(() => {
-                    (pre) => {
-                      return pre.map((User) => {
-                        if (User.id === editingUser.id) {
-                          return editingUser;
-                        } else {
-                          return User;
-                        }
-                      });
-                    };
-                    window.location.reload();
-                    resetEditing();
+          title="Edit user"
+          open={isEditing}
+          okText="Save"
+          onCancel={() => {
+            resetEditing();
+          }}
+          onOk={() => {
+            userService
+              .update(editingUser.id, {
+                name: editingUser.name,
+                phone: editingUser.phone,
+                address: editingUser.address,
+              })
+              .then(() => {
+                (pre) => {
+                  return pre.map((User) => {
+                    if (User.id === editingUser.id) {
+                      return editingUser;
+                    } else {
+                      return User;
+                    }
                   });
-              }}
-            >
-              <label> Name</label>
+                };
+                window.location.reload();
+                resetEditing();
+              });
+          }}
+        >
+          <label> Name</label>
+          <Input
+            value={editingUser?.name}
+            onChange={(e) => {
+              setEditingUser((pre) => {
+                return { ...pre, name: e.target.value };
+              });
+            }}
+          />
+          <div>
+            <label>Phone</label>
+            <div>
               <Input
-                value={editingUser?.name}
+                value={editingUser?.phone}
                 onChange={(e) => {
                   setEditingUser((pre) => {
-                    return { ...pre, name: e.target.value };
+                    return { ...pre, phone: e.target.value };
                   });
                 }}
               />
-              <div>
-                <label>Phone</label>
-                <div>
-                  <Input
-                    value={editingUser?.phone}
-                    onChange={(e) => {
-                      setEditingUser((pre) => {
-                        return { ...pre, phone: e.target.value };
-                      });
-                    }}
-                  />
-                </div>
-              </div>
-              <div>
-                <label>Address</label>
-                <div>
-                  <Input  
-                    value={editingUser?.address}
-                    onChange={(e) => {
-                      setEditingUser((pre) => {
-                        return { ...pre, address: e.target.value };
-                      });
-                    }}
-                  />
-                </div>
-              </div>
-                    
-            </Modal>
+            </div>
+          </div>
+          <div>
+            <label>Address</label>
+            <div>
+              <Input
+                value={editingUser?.address}
+                onChange={(e) => {
+                  setEditingUser((pre) => {
+                    return { ...pre, address: e.target.value };
+                  });
+                }}
+              />
+            </div>
+          </div>
+        </Modal>
       </section>
     </div>
   );
