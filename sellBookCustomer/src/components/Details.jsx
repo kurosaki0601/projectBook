@@ -4,7 +4,7 @@ import bookService from "../Service/book.service";
 import Header from "./Header";
 
 import detailStyle from "../styles/Detail.module.css";
-import { Button, Input } from "antd";
+import { Alert, Button, Input } from "antd";
 import Footer from "./Footer";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -19,6 +19,8 @@ const Details = () => {
   const [newComment, setNewComment] = useState("");
   const userInfo = useUserInfo();
   const navigate = useNavigate();
+  const [successMessage, setSuccessMessage] = useState("");
+
   useEffect(() => {
     const result = bookService.read(id);
     result.then((book) => setBook(book.data));
@@ -29,7 +31,7 @@ const Details = () => {
 
   const formik = useFormik({
     initialValues: {
-      quantityOrder: "1",
+      quantityOrder: 1,
       totalPrice: "",
     },
     validationSchema: yup.object({
@@ -43,12 +45,27 @@ const Details = () => {
         quantityOrder: values.quantityOrder,
         totalPrice: values.totalPrice,
       };
-      try {
-        await orderService.create(order);
+      const data = {
+        name: book?.name,
+        author: book?.author,
+        abstract: book,
+        quantity: book?.quantity - values.quantityOrder,
+        price: book?.price,
+        category: book?.category,
+        picture: book?.picture,
+      };
 
-        // location.reload();
-      } catch (err) {
-        console.log(err);
+      if (values.quantityOrder > book?.quantity) {
+        window.alert("You cannot purchase more than is available");
+      } else {
+        await orderService.create(order);
+        await bookService.update(book?.id, data);
+        setSuccessMessage("Order placed successfully!");
+        setTimeout(() => {
+          setSuccessMessage("");
+        }, 2000);
+        const remainingQuantity = book.quantity - values.quantityOrder;
+        setBook({ ...book, quantity: remainingQuantity });
       }
     },
   });
@@ -108,9 +125,20 @@ const Details = () => {
   return (
     <div style={{ backgroundColor: "lightgray" }}>
       <Header></Header>
-      <Button type="link" onClick={goBack}>
-        Go back
-      </Button>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <Button type="link" onClick={goBack}>
+          Go back
+        </Button>
+        {successMessage && (
+          <Alert
+            style={{ width: "30%" }}
+            message={successMessage}
+            type="success"
+            showIcon
+            closable
+          />
+        )}
+      </div>
       <div>
         <div className={detailStyle.divdetail}>
           <img

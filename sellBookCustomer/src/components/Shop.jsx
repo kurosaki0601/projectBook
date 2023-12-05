@@ -138,7 +138,9 @@ const Shop = () => {
                 </Card>
               </Col>
             ))}
+
             <Pagination
+              style={{ marginTop: "15px" }}
               current={currentPage}
               total={totalItems * 10}
               onChange={handlePageChange}
