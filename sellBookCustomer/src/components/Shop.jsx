@@ -4,7 +4,7 @@ import categoryService from "../Service/category.service";
 import shopStyle from "../styles/Shop.module.css";
 import { Row } from "react-bootstrap";
 import { Col } from "react-bootstrap";
-import { Input, Button, Pagination } from "antd";
+import { Input, Button, Pagination, Slider } from "antd";
 import { Link } from "react-router-dom";
 import { Card } from "antd";
 import homeStyle from "../styles/Home.module.css";
@@ -16,9 +16,16 @@ const Shop = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [priceRange, setPriceRange] = useState([0, 100]);
+  const [applyingFilters, setApplyingFilters] = useState(false);
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+  const handleSliderChange = (value) => {
+    setPriceRange(value);
+    console.log(value);
+  };
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -36,6 +43,32 @@ const Shop = () => {
     }
     fetchData();
   }, [searchTerm, currentPage]);
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     try {
+  //       const result = await bookService.searchPrice(priceRange);
+  //       setBook(result.data.items);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   }
+  //   fetchData();
+  // }, [priceRange]);
+  const applyFilters = async () => {
+    setApplyingFilters(true);
+    try {
+      let result;
+      if (selectedCategory) {
+        result = await bookService.filter(selectedCategory, priceRange);
+      } else {
+        result = await bookService.searchPrice(priceRange);
+      }
+      setBook(result.data.items);
+    } catch (err) {
+      console.log(err);
+    }
+    setApplyingFilters(false);
+  };
   useEffect(() => {
     async function fetchData() {
       try {
@@ -102,6 +135,24 @@ const Shop = () => {
               </Col>
             </Row>
           ))}
+          <div
+            style={{
+              backgroundColor: "white",
+              padding: "10px",
+              marginTop: "20px",
+            }}
+          >
+            {" "}
+            <strong style={{ fontSize: "24px" }}>Price</strong>
+            <Slider
+              range
+              value={priceRange}
+              onChange={handleSliderChange}
+            ></Slider>
+            <Button onClick={applyFilters} loading={applyingFilters}>
+              Áp dụng
+            </Button>
+          </div>
         </Col>
 
         <Col md={10}>
