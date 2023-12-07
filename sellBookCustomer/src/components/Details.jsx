@@ -25,6 +25,12 @@ const Details = () => {
     const result = bookService.read(id);
     result.then((book) => setBook(book.data));
   }, [id]);
+  useEffect(() => {
+    if (book) {
+      formik.setFieldValue("totalPrice", book.price);
+    }
+  }, [book]);
+
   const goBack = () => {
     navigate(-1);
   };
@@ -32,7 +38,7 @@ const Details = () => {
   const formik = useFormik({
     initialValues: {
       quantityOrder: 1,
-      totalPrice: "",
+      totalPrice: 0,
     },
     validationSchema: yup.object({
       quantityOrder: yup.string().required("required!"),
